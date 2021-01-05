@@ -1,6 +1,10 @@
+__author__="Adam Brewer"
 import subprocess
 import sys
 import os
+import ctypes
+
+
 
 translation_table = {"0x00": "UNASSIGNED", "0x01": "OVERRUN_ERROR", "0x02": "POST_FAIL", "0x03": "ERROR_UNDEFINED",
                      "0x04": "A", "0x05": "B", "0x06": "C", "0x07": "D", "0x08": "E", "0x09": "F", "0x0A": "G",
@@ -58,7 +62,9 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 def main():
-    process = subprocess.Popen([resource_path('hdl.exe')], stdout=subprocess.PIPE)
+    ctypes.windll.kernel32.SetConsoleTitleW("EasyHIDListen")
+    print("EasyHIDListen - Created by Adam Brewer")
+    process = subprocess.Popen([resource_path('rsc/hid_listen.exe')], stdout=subprocess.PIPE)
     while True:
         output = process.stdout.readline()
         if output == '' and process.poll() is not None:
@@ -69,7 +75,7 @@ def main():
                 a = x[1:]
                 if '+' in x:
                     tr = f'0x{a.upper()}'
-                    print(f"Pressed code={tr} translation={translation_table[tr]}")
+                    print(f"PRESS\t||\tcode={tr}\ttranslation={translation_table[tr]}")
         rc = process.poll()
     process.kill()
 
