@@ -63,7 +63,7 @@ def resource_path(relative_path):
 
 def main():
     ctypes.windll.kernel32.SetConsoleTitleW("EasyHIDListen")
-    print("EasyHIDListen - Created by Adam Brewer")
+    print("EasyHIDListen - Created by Adam Brewer\n")
     process = subprocess.Popen([resource_path('rsc/hid_listen.exe')], stdout=subprocess.PIPE)
     while True:
         output = process.stdout.readline()
