@@ -71,11 +71,14 @@ def main():
             break
         if output:
             outstr = output.strip().decode('utf-8').split(' ')
-            for x in outstr:
-                a = x[1:]
-                if '+' in x:
-                    tr = f'0x{a.upper()}'
-                    print(f"PRESS\t||\tcode={tr}\ttranslation={translation_table[tr]}")
+            for i in range(0, len(outstr)):
+                a = outstr[i][1:]
+                trr = ''
+                if '+' in outstr[i]:
+                    tr = a.upper()
+                    if i+1 != len(outstr) and 'd' in outstr[i+1]:
+                        trr = outstr[i+1][1:]
+                    print(f"PRESS\t||\tcode={tr}\ttranslation={translation_table['0x'+tr]}\t"+(f"\ttranslation_remapping={translation_table['0x'+trr]}" if trr and tr != trr else ""))
         rc = process.poll()
     process.kill()
 
