@@ -2,6 +2,7 @@
 
 EasyHIDListen is a utility program that automatically converts hex keycodes (read by [HID Listen](https://www.pjrc.com/teensy/hid_listen.html)) into Soarer's converter codes.
 
+[Latest Release](https://github.com/adamhb123/EasyHIDListen/releases/tag/v1.0)
 ## Installation
 
 If you're on Windows, all you need to do is download and run <a id="raw-url" href="https://raw.githubusercontent.com/adamhb123/EasyHIDListen/master/builds/EasyHIDListen.exe">EasyHIDListen.exe</a>!
