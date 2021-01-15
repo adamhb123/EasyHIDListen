@@ -3,6 +3,7 @@ import subprocess
 import sys
 import os
 import ctypes
+from datetime import datetime
 
 
 
@@ -61,25 +62,35 @@ def resource_path(relative_path):
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
 
+def print_and_log(string, file):
+    print(string)
+    now_str = datetime.now().strftime('%m/%d/%y %H:%M:%S')
+    file.write(f"[{now_str}] {string}\n")
+    file.flush()
+    
+
 def main():
+    if not os.path.exists('logs'):
+        os.makedirs('logs')
     ctypes.windll.kernel32.SetConsoleTitleW("EasyHIDListen")
     print("EasyHIDListen - Created by Adam Brewer\n")
     process = subprocess.Popen([resource_path('rsc/hid_listen.exe')], stdout=subprocess.PIPE)
-    while True:
-        output = process.stdout.readline()
-        if output == '' and process.poll() is not None:
-            break
-        if output:
-            outstr = output.strip().decode('utf-8').split(' ')
-            for i in range(0, len(outstr)):
-                a = outstr[i][1:]
-                trr = ''
-                if '+' in outstr[i]:
-                    tr = a.upper()
-                    if i+1 != len(outstr) and 'd' in outstr[i+1]:
-                        trr = outstr[i+1][1:]
-                    print(f"PRESS\t||\tcode={tr}\ttranslation={translation_table['0x'+tr]}\t"+(f"\ttranslation_remapping={translation_table['0x'+trr]}" if trr and tr != trr else ""))
-        rc = process.poll()
+    with open(f'./logs/{datetime.now().strftime("%m-%d-%y")}.txt','a+') as log_file:
+        while True:
+            output = process.stdout.readline()
+            if output == '' and process.poll() is not None:
+                break
+            if output:
+                outstr = output.strip().decode('utf-8').split(' ')
+                for i in range(0, len(outstr)):
+                    a = outstr[i][1:]
+                    trr = ''
+                    if '+' in outstr[i]:
+                        tr = a.upper()
+                        if i+1 != len(outstr) and 'd' in outstr[i+1]:
+                            trr = outstr[i+1][1:]
+                        print_and_log(f"PRESS\t||\tcode={tr}\ttranslation={translation_table['0x'+tr]}\t"+(f"\tremapping={translation_table['0x'+trr]}" if trr and tr != trr else ""), log_file)
+            rc = process.poll()
     process.kill()
 
 if __name__=="__main__":
