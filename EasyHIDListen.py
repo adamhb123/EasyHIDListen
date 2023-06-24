@@ -56,7 +56,8 @@ translation_table = {"0x00": "UNASSIGNED", "0x01": "OVERRUN_ERROR", "0x02": "POS
                      "0xF4": "MEDIA_TREBLE_DOWN", "0xF5": "MEDIA_MEDIA_SELECT", "0xF6": "MEDIA_MAIL",
                      "0xF7": "MEDIA_CALCULATOR", "0xF8": "MEDIA_MY_COMPUTER", "0xF9": "MEDIA_WWW_SEARCH",
                      "0xFA": "MEDIA_WWW_HOME", "0xFB": "MEDIA_WWW_BACK", "0xFC": "MEDIA_WWW_FORWARD",
-                     "0xFD": "MEDIA_WWW_STOP", "0xFE": "MEDIA_WWW_REFRESH", "0xFF": "MEDIA_WWW_FAVORITES"}
+                     "0xFD": "MEDIA_WWW_STOP", "0xFE": "MEDIA_WWW_REFRESH", "0xFF": "MEDIA_WWW_FAVORITES",
+                     "0xB0": "FAKE_01", "0xC1": "FAKE_18", "0x00": "NONE"}
 
 def resource_path(relative_path):
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
@@ -73,25 +74,24 @@ def main():
     if not os.path.exists('logs'):
         os.makedirs('logs')
     ctypes.windll.kernel32.SetConsoleTitleW("EasyHIDListen")
-    print("EasyHIDListen - Created by Adam Brewer\n")
+    print("EasyHIDListen - Created by Adam Brewer (Github: adamhb123)\n")
     process = subprocess.Popen([resource_path('rsc/hid_listen.exe')], stdout=subprocess.PIPE)
     with open(f'./logs/{datetime.now().strftime("%m-%d-%y")}.txt','a+') as log_file:
         while True:
-            output = process.stdout.readline()
-            if output == '' and process.poll() is not None:
-                break
-            if output:
-                outstr = output.strip().decode('utf-8').split(' ')
-                for i in range(0, len(outstr)):
-                    a = outstr[i][1:]
-                    trr = ''
-                    if '+' in outstr[i]:
-                        tr = a.upper()
-                        if i+1 != len(outstr) and 'd' in outstr[i+1]:
-                            trr = outstr[i+1][1:]
-                        print_and_log(f"PRESS\t||\tcode={tr}\ttranslation={translation_table['0x'+tr]}\t"+(f"\tremapping={translation_table['0x'+trr]}" if trr and tr != trr else ""), log_file)
-            rc = process.poll()
-    process.kill()
+            try:
+                output = process.stdout.readline()
+                if output:
+                    outstr = output.strip().decode('utf-8').split(' ')
+                    for i in range(0, len(outstr)):
+                        a = outstr[i][1:]
+                        trr = ''
+                        if '+' in outstr[i]:
+                            tr = a.upper()
+                            if i+1 != len(outstr) and 'd' in outstr[i+1]:
+                                trr = outstr[i+1][1:]
+                            print_and_log(f"PRESS\t||\tcode={tr}\ttranslation={translation_table['0x'+tr]}\t"+(f"\tremapping={translation_table['0x'+trr]}" if trr and tr != trr else ""), log_file)
+            except:
+                print("¡!! UNKNOWN INPUT !!¡")
 
 if __name__=="__main__":
     main()
